@@ -4,16 +4,22 @@ import { View, Image, FlatList, TouchableOpacity } from "react-native";
 
 import { icons } from "../../constants";
 import useAppwrite from "../../lib/useAppwrite";
-import { getUserPosts, signOut } from "../../lib/appwrite";
+import { getUserPosts } from "../../lib/appwrite";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { EmptyState, InfoBox, VideoCard } from "../../components";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState } from "react";
 
 const Profile = () => {
   const { user, setUser, setIsLogged } = useGlobalContext();
-  const { data: posts } = useAppwrite(() => getUserPosts(user.$id));
+  const [userStorage, setUserStorage] = useState(null);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {}, []);
 
   const logout = async () => {
-    await signOut();
+    AsyncStorage.removeItem("user");
+    AsyncStorage.removeItem("isLogged");
     setUser(null);
     setIsLogged(false);
 
