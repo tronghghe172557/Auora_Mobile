@@ -43,6 +43,7 @@ const SignIn = () => {
 
       // Save to AsyncStorage
       try {
+        await AsyncStorage.setItem("token", userData.accessToken);
         await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
         await AsyncStorage.setItem("@is_logged", "true");
       } catch (storageError) {

@@ -16,6 +16,8 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 
 import * as ImagePicker from "expo-image-picker";
 import { uploadImageToCloudinary } from "../../lib/cloudinary.lib";
+import api from "../../lib/axios.lib";
+import { API_IMAGE } from "../../constants/api.contants";
 
 const Create = () => {
   const { user } = useGlobalContext();
@@ -56,10 +58,20 @@ const Create = () => {
         Alert.alert("Error", "Failed to upload image");
         return;
       }
-      // save to database
 
-      // navigate to home
-      router.replace("/home");
+      const data = {
+        title: form.title,
+        description: form.prompt,
+        image: image,
+      };
+      /// save to database
+      const response = await api.post(API_IMAGE, data);
+
+      if (response.data.data) {
+        Alert.alert("Success", "Image uploaded successfully");
+        // navigate to home
+        router.replace("/home");
+      }
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
