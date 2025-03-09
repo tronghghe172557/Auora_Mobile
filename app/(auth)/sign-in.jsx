@@ -2,20 +2,18 @@ import { useState } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, ScrollView, Dimensions, Image } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { images } from "../../constants";
 import { CustomButton, FormField } from "../../components";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import { API_LOGIN } from "../../constants/api.contants";
 import api from "../../lib/axios.lib";
-import CustomAlert from "../../components/CustomAlert";
 import ToastAlert from "../../components/ToastAlert";
 
 const SignIn = () => {
   const { setUser, setIsLogged } = useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
-  const [alertVisible, setAlertVisible] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [form, setForm] = useState({
@@ -32,23 +30,30 @@ const SignIn = () => {
     setSubmitting(true);
 
     try {
+      // validate form
       if (!form.email || !form.password) {
         showToast("Vui lòng nhập đầy đủ thông tin");
         return;
       }
+      // call api here
       const response = await api.post(API_LOGIN, form);
-      console.log(response);
-      console.log(response.data);
-
-      if (!response.ok) {
-        throw new Error(response.data.message || "Đăng nhập thất bại");
-      }
 
       // Xử lý kết quả đăng nhập thành công
-      setUser(response.data.user);
+      const userData = response.data.data;
+
+      // Save to AsyncStorage
+      try {
+        await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
+        await AsyncStorage.setItem("@is_logged", "true");
+      } catch (storageError) {
+        console.error("Error saving to AsyncStorage:", storageError);
+      }
+
+      // Update context
+      setUser(userData);
       setIsLogged(true);
       showToast("Đăng nhập thành công");
-      router.replace("/(tabs)");
+      router.replace("/home");
     } catch (error) {
       showToast(error.message);
     } finally {

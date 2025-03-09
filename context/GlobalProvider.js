@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 
-import { getCurrentUser } from "../lib/appwrite";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GlobalContext = createContext();
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -11,25 +11,28 @@ const GlobalProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Load user data from AsyncStorage
+    const loadUserData = async () => {
+      try {
+        // Get login status
+        const isLoggedData = await AsyncStorage.getItem("@is_logged");
 
-    // CALL IPI HERE
-    
-    getCurrentUser()
-      .then((res) => {
-        if (res) {
-          setIsLogged(true);
-          setUser(res);
-        } else {
-          setIsLogged(false);
-          setUser(null);
+        // Get user data if logged in
+        if (isLoggedData === "true") {
+          const userData = await AsyncStorage.getItem("@user_data");
+          if (userData) {
+            setUser(JSON.parse(userData));
+            setIsLogged(true);
+          }
         }
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
+      } catch (error) {
+        console.error("Error loading data from AsyncStorage:", error);
+      } finally {
         setLoading(false);
-      });
+      }
+    };
+
+    loadUserData();
   }, []);
 
   return (

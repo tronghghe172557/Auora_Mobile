@@ -31,14 +31,15 @@ export default function ToastAlert({ visible, message = "Alert", onClose }) {
       style={{ 
         opacity: fadeAnim,
         position: 'absolute',
-        top: 50,
+        top: 20,
         left: 10,
         right: 10,
         zIndex: 9999,
+        borderRadius: 100,
       }}
-      className="bg-secondary p-4 rounded-xl border-2 border-black"
+      className="bg-secondary rounded-xl border-2 border-black"
     >
-      <Text className="bg-secondary text-base font-psemibold text-center">
+      <Text className="bg-secondary p-5 text-base font-psemibold text-center">
         {message}
       </Text>
     </Animated.View>
