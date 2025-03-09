@@ -90,7 +90,7 @@ const SignIn = () => {
             title="Email"
             value={form.email}
             handleChangeText={(e) => setForm({ ...form, email: e })}
-            otherStyles="mt-7"
+            otherStyles="mt-7" // mt-7: margin-top: 1.75rem
             keyboardType="email-address"
           />
 
@@ -98,13 +98,13 @@ const SignIn = () => {
             title="Password"
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
-            otherStyles="mt-7"
+            otherStyles="mt-7" // mt-7: margin-top: 1.75rem
           />
 
           <CustomButton
             title="Sign In"
             handlePress={submit}
-            containerStyles="mt-7"
+            containerStyles="mt-7" // mt-7: margin-top: 1.75rem
             isLoading={isSubmitting}
           />
 

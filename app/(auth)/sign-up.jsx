@@ -7,9 +7,15 @@ import { images } from "../../constants";
 import { createUser } from "../../lib/appwrite";
 import { CustomButton, FormField } from "../../components";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import ToastAlert from "../../components/ToastAlert";
+import { API_REGISTER } from "../../constants/api.contants";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import api from "../../lib/axios.lib";
 
 const SignUp = () => {
   const { setUser, setIsLogged } = useGlobalContext();
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
 
   const [isSubmitting, setSubmitting] = useState(false);
   const [form, setForm] = useState({
@@ -20,15 +26,31 @@ const SignUp = () => {
 
   const submit = async () => {
     if (form.username === "" || form.email === "" || form.password === "") {
-      Alert.alert("Error", "Please fill in all fields");
+      setToastMessage("Please fill in all fields");
+      setToastVisible(true);
+      return;
     }
 
     setSubmitting(true);
     try {
-      const result = await createUser(form.email, form.password, form.username);
-      setUser(result);
-      setIsLogged(true);
+      const response = await api.post(API_REGISTER, form);
+      // Xử lý kết quả đăng nhập thành công
+      const userData = response.data.data;
 
+      // Save to AsyncStorage
+      try {
+        await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
+        await AsyncStorage.setItem("@is_logged", "true");
+      } catch (storageError) {
+        showToast("Error saving to AsyncStorage:");
+        console.error("Error saving to AsyncStorage:", storageError);
+        return;
+      }
+
+      // Update context
+      setUser(userData);
+      setIsLogged(true);
+      showToast("Đăng nhập thành công");
       router.replace("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
@@ -40,6 +62,13 @@ const SignUp = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView>
+        {/* ToastAlert */}
+        <ToastAlert
+          visible={toastVisible}
+          message={toastMessage}
+          onClose={() => setToastVisible(false)}
+        />
+
         <View
           className="w-full flex justify-center h-full px-4 my-6"
           style={{
