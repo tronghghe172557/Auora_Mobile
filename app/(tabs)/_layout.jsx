@@ -8,15 +8,15 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
-    <View className="flex items-center justify-center gap-2">
+    <View className="flex items-center justify-center">
       <Image
         source={icon}
         resizeMode="contain"
         tintColor={color}
-        className="w-6 h-6"
+        className="w-8 h-8 self-center pt-2"
       />
       <Text
-        className={`${focused ? "font-psemibold" : "font-pregular"} text-xs`}
+        className={`${focused ? "font-psemibold" : "font-pregular"} `}
         style={{ color: color }}
       >
         {name}
@@ -34,29 +34,26 @@ const TabLayout = () => {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: "#FFA001",
-          tabBarInactiveTintColor: "#CDCDE0",
-          tabBarShowLabel: false,
+          tabBarActiveTintColor: "#FFA001", // yellow
+          tabBarInactiveTintColor: "#CDCDE0", // light gray
+          tabBarShowLabel: false, // hide label
           tabBarStyle: {
-            backgroundColor: "#161622",
-            borderTopWidth: 1,
-            borderTopColor: "#232533",
-            height: 84,
+            backgroundColor: "#161622", // dark
+            borderTopWidth: 1, // top border
+            borderTopColor: "#232533", // dark
+            height: 60, // height
           },
         }}
       >
         <Tabs.Screen
           name="home"
+          className="flex items-center justify-center"
           options={{
             title: "Home",
             headerShown: false,
+           
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.home}
-                color={color}
-                name="Home"
-                focused={focused}
-              />
+              <TabIcon icon={icons.home} color={color} focused={focused} />
             ),
           }}
         />
@@ -66,12 +63,7 @@ const TabLayout = () => {
             title: "Bookmark",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.bookmark}
-                color={color}
-                name="Bookmark"
-                focused={focused}
-              />
+              <TabIcon icon={icons.bookmark} color={color} focused={focused} />
             ),
           }}
         />
@@ -82,12 +74,7 @@ const TabLayout = () => {
             title: "Create",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.plus}
-                color={color}
-                name="Create"
-                focused={focused}
-              />
+              <TabIcon icon={icons.plus} color={color} focused={focused} />
             ),
           }}
         />
@@ -97,12 +84,7 @@ const TabLayout = () => {
             title: "Profile",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon
-                icon={icons.profile}
-                color={color}
-                name="Profile"
-                focused={focused}
-              />
+              <TabIcon icon={icons.profile} color={color} focused={focused} />
             ),
           }}
         />
