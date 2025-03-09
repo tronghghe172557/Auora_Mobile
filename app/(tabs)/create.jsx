@@ -15,6 +15,7 @@ import { CustomButton, FormField } from "../../components";
 import { useGlobalContext } from "../../context/GlobalProvider";
 
 import * as ImagePicker from "expo-image-picker";
+import { uploadImageToCloudinary } from "../../lib/cloudinary.lib";
 
 const Create = () => {
   const { user } = useGlobalContext();
@@ -40,6 +41,7 @@ const Create = () => {
     })();
   }, []);
 
+  // upload image to cloudinary and save it in db
   const submit = async () => {
     if ((form.prompt === "") | (form.title === "") | (imageUri === null)) {
       return Alert.alert("Please provide all fields");
@@ -47,14 +49,23 @@ const Create = () => {
 
     setUploading(true);
     try {
-      console.log(form.prompt, form.title, imageUri);
+      // upload image to cloudinary
+      const image = await uploadImageToCloudinary(imageUri);
+
+      if (!image) {
+        Alert.alert("Error", "Failed to upload image");
+        return;
+      }
+      // save to database
+
+      // navigate to home
+      router.replace("/home");
     } catch (error) {
       Alert.alert("Error", error.message);
     } finally {
       setForm({
         title: "",
-        video: null,
-        thumbnail: null,
+        imageUri: null,
         prompt: "",
       });
 
@@ -62,6 +73,7 @@ const Create = () => {
     }
   };
 
+  // pick image from gallery
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
@@ -70,6 +82,7 @@ const Create = () => {
     });
 
     if (!result.canceled) {
+      console.log(result.assets[0].uri);
       setImageUri(result.assets[0].uri);
     } else {
       alert("You did not select any image.");
@@ -81,6 +94,7 @@ const Create = () => {
       <ScrollView className="px-4 my-6">
         <Text className="text-2xl text-white font-psemibold">Upload Image</Text>
 
+        {/* TITLE  */}
         <FormField
           title="Image Title"
           value={form.title}
@@ -94,6 +108,7 @@ const Create = () => {
             Thumbnail Image
           </Text>
 
+          {/* IMAGE  */}
           <TouchableOpacity onPress={pickImageAsync}>
             {imageUri ? (
               <Image
@@ -117,6 +132,7 @@ const Create = () => {
           </TouchableOpacity>
         </View>
 
+        {/* PROMPT */}
         <FormField
           title="Prompt"
           value={form.prompt}
