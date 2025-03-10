@@ -1,10 +1,9 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { useState, useRef } from "react";
-import { Text, TouchableOpacity, View, Image, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Ionicons } from "@expo/vector-icons";
 import * as MediaLibrary from 'expo-media-library';
-import { router } from "expo-router";
+import { TopBar, CameraFrame, BottomControls } from "../../components/camera";
 
 export default function CameraScreen() {
   const [facing, setFacing] = useState<CameraType>("front");
@@ -12,7 +11,8 @@ export default function CameraScreen() {
   const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
   const [flash, setFlash] = useState<boolean>(false);
   const [isCameraReady, setCameraReady] = useState(false);
-  const cameraRef = useRef(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const cameraRef = useRef<CameraView>(null);
   
   const screenWidth = Dimensions.get("window").width;
   const frameSize = screenWidth - 40;
@@ -66,114 +66,64 @@ export default function CameraScreen() {
         exif: false,
       });
 
-      // Lưu ảnh vào thư viện
-      await MediaLibrary.saveToLibraryAsync(photo.uri);
-
-      // Điều hướng đến màn hình xem trước ảnh hoặc xử lý tiếp theo
-      // router.push({
-      //   pathname: "/(tabs)/preview",
-      //   params: { imageUri: photo.uri }
-      // });
-      
-      console.log("Photo taken:", photo.uri);
+      if (photo && photo.uri) {
+        setPreviewImage(photo.uri);
+        console.log("Photo taken:", photo.uri);
+      }
     } catch (error) {
       console.error("Failed to take picture:", error);
     }
   };
 
+  const savePhoto = async () => {
+    if (!previewImage) return;
+
+    try {
+      await MediaLibrary.saveToLibraryAsync(previewImage);
+      setPreviewImage(null); // Quay lại chế độ chụp
+      console.log("Photo saved to library");
+    } catch (error) {
+      console.error("Failed to save photo:", error);
+    }
+  };
+
+  const cancelPreview = () => {
+    setPreviewImage(null);
+  };
+
+  const uploadPhoto = () => {
+    // Xử lý upload ảnh lên server ở đây
+    console.log("Uploading photo:", previewImage);
+    setPreviewImage(null);
+  };
+
   return (
     <View className="flex-1 bg-black">
       <SafeAreaView className="flex-1">
-        {/* Top Bar */}
-        <View className="flex-row justify-between items-center px-4 py-2">
-          <View className="flex-row items-center space-x-2">
-            <TouchableOpacity className="w-10 h-10 rounded-full overflow-hidden">
-              <Image
-                source={require("../../assets/images/profile.png")}
-                className="w-full h-full"
-              />
-            </TouchableOpacity>
-            <View className="bg-black/50 px-4 py-2 rounded-full flex-row items-center">
-              <Ionicons name="people" size={20} color="white" />
-              <Text className="text-white ml-2 font-psemibold">
-                4 người bạn
-              </Text>
-            </View>
-          </View>
-          <TouchableOpacity className="w-10 h-10 bg-black/50 rounded-full items-center justify-center">
-            <Ionicons name="chatbubble-outline" size={20} color="white" />
-          </TouchableOpacity>
-        </View>
+        <TopBar 
+          onSave={savePhoto}
+          isPreviewMode={!!previewImage}
+        />
 
-        {/* Camera Frame */}
-        <View className="flex-1 justify-center items-center">
-          <View
-            style={{
-              width: frameSize,
-              height: frameSize,
-              borderRadius: 35,
-              overflow: "hidden",
-            }}
-            className="relative"
-          >
-            <CameraView 
-              ref={cameraRef}
-              style={{ flex: 1 }} 
-              facing={facing} 
-              enableTorch={flash}
-              onCameraReady={() => setCameraReady(true)}
-            >
-              {/* Camera Controls Overlay */}
-              <View className="absolute top-4 left-4 right-4 flex-row justify-between">
-                <TouchableOpacity
-                  onPress={toggleFlash}
-                  className="w-10 h-10 bg-black/50 rounded-full items-center justify-center"
-                >
-                  <Ionicons
-                    name={flash ? "flash" : "flash-off"}
-                    size={20}
-                    color="white"
-                  />
-                </TouchableOpacity>
-                <TouchableOpacity className="w-10 h-10 bg-black/50 rounded-full items-center justify-center">
-                  <Text className="text-white font-psemibold">1×</Text>
-                </TouchableOpacity>
-              </View>
-            </CameraView>
-          </View>
-        </View>
+        <CameraFrame
+          frameSize={frameSize}
+          previewImage={previewImage}
+          cameraRef={cameraRef}
+          facing={facing}
+          flash={flash}
+          isCameraReady={isCameraReady}
+          onCameraReady={() => setCameraReady(true)}
+          onToggleFlash={toggleFlash}
+        />
 
-        {/* Bottom Controls */}
-        <View className="pb-10">
-          <View className="flex-row justify-around items-center px-4">
-            <TouchableOpacity>
-              <Ionicons name="images-outline" size={30} color="white" />
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={takePicture}
-              className="w-20 h-20 rounded-full items-center justify-center"
-              disabled={!isCameraReady}
-            >
-              <View className="w-16 h-16 rounded-full bg-white border-4 border-secondary" />
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={toggleCameraFacing}>
-              <Ionicons name="camera-reverse-outline" size={30} color="white" />
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        {/* History Bar */}
-        {/* <View className="pb-4 items-center">
-          <TouchableOpacity className="flex-row items-center space-x-2 bg-black/50 px-4 py-2 rounded-full">
-            <Image
-              source={require('../../assets/images/profile.png')}
-              className="w-8 h-8 rounded-lg"
-            />
-            <Text className="text-white font-psemibold">Lịch sử</Text>
-          </TouchableOpacity>
-        </View> */}
+        <BottomControls
+          isPreviewMode={!!previewImage}
+          isCameraReady={isCameraReady}
+          onCancel={cancelPreview}
+          onCapture={takePicture}
+          onUpload={uploadPhoto}
+          onFlipCamera={toggleCameraFacing}
+        />
       </SafeAreaView>
     </View>
   );
