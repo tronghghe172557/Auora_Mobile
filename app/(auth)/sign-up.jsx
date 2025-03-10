@@ -43,7 +43,7 @@ const SignUp = () => {
         await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
         await AsyncStorage.setItem("@is_logged", "true");
       } catch (storageError) {
-        showToast("Error saving to AsyncStorage:");
+        Alert.alert("Error saving to AsyncStorage:");
         console.error("Error saving to AsyncStorage:", storageError);
         return;
       }
@@ -51,10 +51,11 @@ const SignUp = () => {
       // Update context
       setUser(userData);
       setIsLogged(true);
-      showToast("Đăng nhập thành công");
+      Alert.alert("Đăng nhập thành công");
       router.replace("/home");
     } catch (error) {
-      Alert.alert("Error", error.message);
+      // Alert.alert("Error", error.message);
+      console.log("Error in SignUp:", error);
     } finally {
       setSubmitting(false);
     }
@@ -83,7 +84,7 @@ const SignUp = () => {
           />
 
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Sign Up to Aora
+            Sign Up to <Text className="text-secondary">Locket</Text>
           </Text>
 
           <FormField

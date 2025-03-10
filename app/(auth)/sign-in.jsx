@@ -36,8 +36,8 @@ const SignIn = () => {
       }
 
       const response = await api.post(API_LOGIN, form);
-      const dataUser = response.data.data
-      console.log('Data user in login:', dataUser);
+      const dataUser = response.data.data;
+      console.log("Data user in login:", dataUser);
       if (dataUser) {
         // save in local storage
         await AsyncStorage.setItem("Token", dataUser.accessToken);
@@ -81,7 +81,7 @@ const SignIn = () => {
           />
 
           <Text className="text-2xl font-semibold text-white mt-10 font-psemibold">
-            Log in to Aora
+            Log in to <Text className="text-secondary">Locket</Text>
           </Text>
 
           <FormField
