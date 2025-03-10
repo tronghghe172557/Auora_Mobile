@@ -6,8 +6,10 @@ import { EmptyState } from "../../components";
 import { API_IMAGE } from "../../constants/api.contants";
 import ImageCard from "../../components/Image";
 import api from "../../lib/axios.lib";
+import { useGlobalContext } from "../../context/GlobalProvider";
 
 const Home = () => {
+    const { user, setReloadHomepage, reloadHomepage } = useGlobalContext();
   const [posts, setPosts ] = useState([]);
 
   useEffect(() => {
@@ -23,7 +25,7 @@ const Home = () => {
     };
 
     fetchProfile();
-  }, []);
+  }, [reloadHomepage]);
 
   return (
     <SafeAreaView className="bg-primary h-full">

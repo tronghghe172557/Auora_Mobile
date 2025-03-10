@@ -9,6 +9,7 @@ const GlobalProvider = ({ children }) => {
   const [isLogged, setIsLogged] = useState(false);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [reloadHomepage, setReloadHomePage] = useState(false);
 
   useEffect(() => {
     // Load user data from AsyncStorage
@@ -43,6 +44,8 @@ const GlobalProvider = ({ children }) => {
         user,
         setUser,
         loading,
+        reloadHomepage,
+        setReloadHomePage,
       }}
     >
       {children}

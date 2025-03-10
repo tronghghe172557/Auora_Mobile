@@ -20,7 +20,7 @@ import api from "../../lib/axios.lib";
 import { API_IMAGE } from "../../constants/api.contants";
 
 const Create = () => {
-  const { user } = useGlobalContext();
+  const { user, setReloadHomePage, reloadHomepage } = useGlobalContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
     title: "",
@@ -69,6 +69,8 @@ const Create = () => {
 
       if (response.data.data) {
         Alert.alert("Success", "Image uploaded successfully");
+        // reload homepage
+        setReloadHomePage(!reloadHomepage);
         // navigate to home
         router.replace("/home");
       }
