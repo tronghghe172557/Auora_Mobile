@@ -1,4 +1,6 @@
-export const API_BASE_URL = 'http://192.168.102.101:9999/api';
+const port_computer = process.env.EXPO_PUBLIC_PORT_COMPUTER || "localhost";
+const port_backend = process.env.EXPO_PUBLIC_PORT_BACKEND || "9999";
+export const API_BASE_URL = `http://${port_computer}:${port_backend}/api`;
 
 // AUTH
 export const API_LOGIN = `/auth/login`;
