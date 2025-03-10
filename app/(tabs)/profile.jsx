@@ -23,7 +23,7 @@ const Profile = () => {
         if (userData) {
           setUser(JSON.parse(userData));
           // GET posts => images from user
-          const imagesUser = await api.get(`${API_IMAGES_USER}/${user._id}`);
+          const imagesUser = await api.get(`${API_IMAGES_USER}/${user?._id}`);
           setPosts(imagesUser.data.data);
         } else {
           router.replace("/sign-in");
@@ -51,7 +51,7 @@ const Profile = () => {
       <ScrollView>
         <FlatList
           data={posts}
-          keyExtractor={(item) => item.$id}
+          keyExtractor={(item) => item._id}
           renderItem={({ item }) => (
             <ImageCard
               title={item?.title || "Untitled"}
