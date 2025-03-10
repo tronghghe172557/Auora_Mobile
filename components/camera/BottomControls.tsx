@@ -6,8 +6,9 @@ interface BottomControlsProps {
   isCameraReady: boolean;
   onCancel: () => void;
   onCapture: () => void;
-  onUpload: () => void;
   onFlipCamera: () => void;
+  onUpload?: () => void;
+  canUpload?: boolean;
 }
 
 export default function BottomControls({
@@ -15,8 +16,9 @@ export default function BottomControls({
   isCameraReady,
   onCancel,
   onCapture,
-  onUpload,
   onFlipCamera,
+  onUpload,
+  canUpload
 }: BottomControlsProps) {
   return (
     <View className="pb-10">
@@ -29,17 +31,28 @@ export default function BottomControls({
           />
         </TouchableOpacity>
 
-        <TouchableOpacity 
-          onPress={isPreviewMode ? onUpload : onCapture}
-          className="w-20 h-20 rounded-full items-center justify-center"
-          disabled={!isCameraReady && !isPreviewMode}
-        >
-          <View className="w-16 h-16 rounded-full bg-white border-4 border-secondary flex items-center justify-center">
-            {isPreviewMode && (
-              <Ionicons name="arrow-up-outline" size={30} color="black" />
-            )}
-          </View>
-        </TouchableOpacity>
+        {isPreviewMode ? (
+          <TouchableOpacity 
+            onPress={canUpload ? onUpload : undefined}
+            className={`w-20 h-20 rounded-full items-center justify-center ${!canUpload ? 'opacity-50' : ''}`}
+          >
+            <View className="w-16 h-16 rounded-full bg-white border-4 border-secondary flex items-center justify-center">
+              <Ionicons 
+                name="arrow-up" 
+                size={30} 
+                color={canUpload ? "black" : "gray"} 
+              />
+            </View>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity 
+            onPress={onCapture}
+            className="w-20 h-20 rounded-full items-center justify-center"
+            disabled={!isCameraReady}
+          >
+            <View className="w-16 h-16 rounded-full bg-white border-4 border-secondary" />
+          </TouchableOpacity>
+        )}
 
         <TouchableOpacity onPress={isPreviewMode ? undefined : onFlipCamera}>
           <Ionicons 

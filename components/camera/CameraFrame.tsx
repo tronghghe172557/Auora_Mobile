@@ -2,6 +2,7 @@ import { View, TouchableOpacity, Text, Image } from 'react-native';
 import { CameraView, CameraType } from "expo-camera";
 import { Ionicons } from "@expo/vector-icons";
 import { RefObject } from 'react';
+import MessageInput from './MessageInput';
 
 interface CameraFrameProps {
   frameSize: number;
@@ -12,6 +13,9 @@ interface CameraFrameProps {
   isCameraReady: boolean;
   onCameraReady: () => void;
   onToggleFlash: () => void;
+  message?: string;
+  setMessage?: (message: string) => void;
+  isUploading?: boolean;
 }
 
 export default function CameraFrame({
@@ -23,6 +27,9 @@ export default function CameraFrame({
   isCameraReady,
   onCameraReady,
   onToggleFlash,
+  message,
+  setMessage,
+  isUploading
 }: CameraFrameProps) {
   return (
     <View className="flex-1 justify-center items-center">
@@ -36,11 +43,22 @@ export default function CameraFrame({
         className="relative"
       >
         {previewImage ? (
-          <Image 
-            source={{ uri: previewImage }} 
-            style={{ flex: 1 }}
-            className="w-full h-full"
-          />
+          <View className="flex-1">
+            <Image 
+              source={{ uri: previewImage }} 
+              style={{ flex: 1 }}
+              className="w-full h-full"
+            />
+            {setMessage && (
+              <View className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/50 to-transparent">
+                <MessageInput
+                  message={message || ""}
+                  setMessage={setMessage}
+                  isUploading={isUploading}
+                />
+              </View>
+            )}
+          </View>
         ) : (
           <CameraView 
             ref={cameraRef}

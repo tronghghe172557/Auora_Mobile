@@ -1,21 +1,31 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, Dimensions, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import * as MediaLibrary from 'expo-media-library';
+import * as MediaLibrary from "expo-media-library";
 import { TopBar, CameraFrame, BottomControls } from "../../components/camera";
+import { uploadImageToCloudinary } from "../../lib/cloudinary.lib";
+import { API_IMAGE } from "../../constants/api.contants";
+import api from "../../lib/axios.lib";
+import { router } from "expo-router";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import Loader from "../../components/Loader";
 
 export default function CameraScreen() {
+  const { setReloadHomePage, reloadHomepage } = useGlobalContext();
   const [facing, setFacing] = useState<CameraType>("front");
   const [permission, requestPermission] = useCameraPermissions();
-  const [mediaPermission, requestMediaPermission] = MediaLibrary.usePermissions();
+  const [mediaPermission, requestMediaPermission] =
+    MediaLibrary.usePermissions();
   const [flash, setFlash] = useState<boolean>(false);
   const [isCameraReady, setCameraReady] = useState(false);
   const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [message, setMessage] = useState("");
   const cameraRef = useRef<CameraView>(null);
-  
+
   const screenWidth = Dimensions.get("window").width;
-  const frameSize = screenWidth - 40;
+  const frameSize = screenWidth - 20;
 
   // Nếu chưa có quyền truy cập camera hoặc media library
   if (!permission || !mediaPermission) {
@@ -56,6 +66,7 @@ export default function CameraScreen() {
     setFlash((current) => !current);
   }
 
+  // setPreviewImage để xem lại ảnh đã chụp
   const takePicture = async () => {
     if (!cameraRef.current || !isCameraReady) return;
 
@@ -80,7 +91,6 @@ export default function CameraScreen() {
 
     try {
       await MediaLibrary.saveToLibraryAsync(previewImage);
-      setPreviewImage(null); // Quay lại chế độ chụp
       console.log("Photo saved to library");
     } catch (error) {
       console.error("Failed to save photo:", error);
@@ -89,22 +99,55 @@ export default function CameraScreen() {
 
   const cancelPreview = () => {
     setPreviewImage(null);
+    setMessage("");
   };
 
-  const uploadPhoto = () => {
-    // Xử lý upload ảnh lên server ở đây
-    console.log("Uploading photo:", previewImage);
-    setPreviewImage(null);
+  const handleUpload = async () => {
+    if (!previewImage || isUploading) return;
+
+    if (!message.trim()) {
+      Alert.alert("Error", "Please enter a message");
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      // Upload ảnh lên Cloudinary
+      const imageUrl = await uploadImageToCloudinary(previewImage);
+
+      if (!imageUrl) {
+        Alert.alert("Error", "Failed to upload image");
+        return;
+      }
+
+      // Gửi data lên server
+      const response = await api.post(API_IMAGE, {
+        title: message,
+        description: message,
+        image: imageUrl,
+      });
+
+      if (response.data.data) {
+        Alert.alert("Success", "Image uploaded successfully");
+        setReloadHomePage(!reloadHomepage);
+        router.replace("/home" as any);
+      }
+    } catch (error: any) {
+      Alert.alert("Error", error?.message || "Failed to upload");
+    } finally {
+      setIsUploading(false);
+      setPreviewImage(null);
+      setMessage("");
+    }
   };
 
   return (
     <View className="flex-1 bg-black">
       <SafeAreaView className="flex-1">
-        <TopBar 
-          onSave={savePhoto}
-          isPreviewMode={!!previewImage}
-        />
+        {/* top bar */}
+        <TopBar onSave={savePhoto} isPreviewMode={!!previewImage} />
 
+        {/* camera */}
         <CameraFrame
           frameSize={frameSize}
           previewImage={previewImage}
@@ -114,15 +157,23 @@ export default function CameraScreen() {
           isCameraReady={isCameraReady}
           onCameraReady={() => setCameraReady(true)}
           onToggleFlash={toggleFlash}
+          message={message}
+          setMessage={setMessage}
+          isUploading={isUploading}
         />
 
+        {/* loading */}
+        {isUploading && <Loader isLoading={isUploading} />}
+
+        {/* button  */}
         <BottomControls
           isPreviewMode={!!previewImage}
           isCameraReady={isCameraReady}
           onCancel={cancelPreview}
           onCapture={takePicture}
-          onUpload={uploadPhoto}
+          onUpload={handleUpload}
           onFlipCamera={toggleCameraFacing}
+          canUpload={!!message.trim()}
         />
       </SafeAreaView>
     </View>
