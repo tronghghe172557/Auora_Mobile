@@ -2,7 +2,7 @@ import { View, Text, TouchableOpacity, Image } from "react-native";
 
 import { icons } from "../constants";
 
-const VideoCard = ({ title, creator, avatar, thumbnail }) => {
+const ImageCard = ({ title, creator, avatar, thumbnail }) => {
   return (
     <View className="flex flex-col items-center px-4 mb-14">
       <View className="flex flex-row gap-3 items-start">
@@ -38,7 +38,6 @@ const VideoCard = ({ title, creator, avatar, thumbnail }) => {
 
       <TouchableOpacity
         activeOpacity={0.7}
-        onPress={() => setPlay(true)}
         className="w-full h-60 rounded-xl mt-3 relative flex justify-center items-center"
       >
         <Image
@@ -51,4 +50,4 @@ const VideoCard = ({ title, creator, avatar, thumbnail }) => {
   );
 };
 
-export default VideoCard;
+export default ImageCard;

@@ -6,3 +6,6 @@ export const API_REGISTER = `/auth/register`;
 
 // IMAGE
 export const API_IMAGE = `/image`;
+
+// USER
+export const API_IMAGES_USER = `/image/users`;
