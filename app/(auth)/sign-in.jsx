@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { View, Text, ScrollView, Dimensions, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { images } from "../../constants";
 import { CustomButton, FormField } from "../../components";
@@ -10,6 +9,7 @@ import { useGlobalContext } from "../../context/GlobalProvider";
 import { API_LOGIN } from "../../constants/api.contants";
 import api from "../../lib/axios.lib";
 import ToastAlert from "../../components/ToastAlert";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const SignIn = () => {
   const { setUser, setIsLogged } = useGlobalContext();
@@ -30,31 +30,28 @@ const SignIn = () => {
     setSubmitting(true);
 
     try {
-      // validate form
       if (!form.email || !form.password) {
         showToast("Vui lòng nhập đầy đủ thông tin");
         return;
       }
-      // call api here
+
       const response = await api.post(API_LOGIN, form);
-
-      // Xử lý kết quả đăng nhập thành công
-      const userData = response.data.data;
-
-      // Save to AsyncStorage
-      try {
-        await AsyncStorage.setItem("token", userData.accessToken);
-        await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
+      const dataUser = response.data.data
+      console.log('Data user in login:', dataUser);
+      if (dataUser) {
+        // save in local storage
+        await AsyncStorage.setItem("Token", dataUser.accessToken);
+        await AsyncStorage.setItem("@user_data", JSON.stringify(dataUser));
         await AsyncStorage.setItem("@is_logged", "true");
-      } catch (storageError) {
-        console.error("Error saving to AsyncStorage:", storageError);
+
+        // Xử lý kết quả đăng nhập thành công
+        setUser(response.data.user);
+        setIsLogged(true);
+        showToast("Đăng nhập thành công");
+        router.replace("/home");
       }
 
-      // Update context
-      setUser(userData);
-      setIsLogged(true);
-      showToast("Đăng nhập thành công");
-      router.replace("/home");
+      showToast("Đăng nhập thất bại");
     } catch (error) {
       showToast(error.message);
     } finally {
@@ -91,7 +88,7 @@ const SignIn = () => {
             title="Email"
             value={form.email}
             handleChangeText={(e) => setForm({ ...form, email: e })}
-            otherStyles="mt-7" // mt-7: margin-top: 1.75rem
+            otherStyles="mt-7"
             keyboardType="email-address"
           />
 
@@ -99,13 +96,13 @@ const SignIn = () => {
             title="Password"
             value={form.password}
             handleChangeText={(e) => setForm({ ...form, password: e })}
-            otherStyles="mt-7" // mt-7: margin-top: 1.75rem
+            otherStyles="mt-7"
           />
 
           <CustomButton
             title="Sign In"
             handlePress={submit}
-            containerStyles="mt-7" // mt-7: margin-top: 1.75rem
+            containerStyles="mt-7"
             isLoading={isSubmitting}
           />
 
