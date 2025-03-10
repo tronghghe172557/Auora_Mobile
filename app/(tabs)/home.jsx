@@ -29,52 +29,48 @@ const Home = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView>
-        <FlatList
-          data={posts}
-          keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <ImageCard
-              title={item?.title || "Untitled"}
-              thumbnail={item?.image || ""}
-              creator={item?.userId?.username || "Unknown"}
-              avatar={item?.userId?.avatar || ""}
-            />
-          )}
+      <FlatList
+        data={posts}
+        keyExtractor={(item) => item._id}
+        renderItem={({ item }) => (
+          <ImageCard
+            title={item?.title || "Untitled"}
+            thumbnail={item?.image || ""}
+            creator={item?.userId?.username || "Unknown"}
+            avatar={item?.userId?.avatar || ""}
+          />
+        )}
+        // HEADER
+        ListHeaderComponent={() => (
+          <View className="flex my-6 px-4 space-y-6">
+            <View className="flex justify-between items-start flex-row mb-6">
+              <View>
+                <Text className="font-pmedium text-sm text-gray-100">
+                  Welcome Back
+                </Text>
+                <Text className="text-2xl font-psemibold text-white">
+                  LOCKET OF<Text className="text-secondary"> HGT</Text>
+                </Text>
+              </View>
 
-          // HEADER
-          ListHeaderComponent={() => (
-            <View className="flex my-6 px-4 space-y-6">
-              <View className="flex justify-between items-start flex-row mb-6">
-                <View>
-                  <Text className="font-pmedium text-sm text-gray-100">
-                    Welcome Back
-                  </Text>
-                  <Text className="text-2xl font-psemibold text-white">
-                    LOCKET OF<Text className="text-secondary"> HGT</Text>
-                  </Text>
-                </View>
-
-                <View className="mt-1.5">
-                  <Image
-                    source={user?.avatar}
-                    className="w-9 h-10"
-                    resizeMode="contain"
-                  />
-                </View>
+              <View className="mt-1.5">
+                <Image
+                  source={user?.avatar}
+                  className="w-9 h-10"
+                  resizeMode="contain"
+                />
               </View>
             </View>
-          )}
-
-          // if empty data
-          ListEmptyComponent={() => (
-            <EmptyState
-              title="No Videos Found"
-              subtitle="No videos found for this profile"
-            />
-          )}
-        />
-      </ScrollView>
+          </View>
+        )}
+        // if empty data
+        ListEmptyComponent={() => (
+          <EmptyState
+            title="No Videos Found"
+            subtitle="No videos found for this profile"
+          />
+        )}
+      />
     </SafeAreaView>
   );
 };
