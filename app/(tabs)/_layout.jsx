@@ -78,6 +78,7 @@ const TabLayout = () => {
             ),
           }}
         />
+
         <Tabs.Screen
           name="profile"
           options={{
@@ -88,6 +89,15 @@ const TabLayout = () => {
             ),
           }}
         />
+
+         {/* Ẩn changeProfile khỏi tab bar */}
+         {/* <Tabs.Screen
+          name="changeProfile"
+          options={{
+            tabBarButton: () => null, // Ẩn khỏi tab bar
+            headerShown: false,
+          }}
+        /> */}
       </Tabs>
 
       <Loader isLoading={loading} />

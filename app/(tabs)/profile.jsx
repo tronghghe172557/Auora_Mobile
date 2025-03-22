@@ -19,11 +19,13 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const userStorage = await AsyncStorage.getItem("@user_data")
+        const userStorage = await AsyncStorage.getItem("@user_data");
         const userAfterParse = JSON.parse(userStorage);
         if (userAfterParse) {
           // GET posts => images from user
-          const imagesUser = await api.get(`${API_IMAGES_USER}/${userAfterParse?._id}`);
+          const imagesUser = await api.get(
+            `${API_IMAGES_USER}/${userAfterParse?._id}`
+          );
           setPosts(imagesUser.data.data);
         } else {
           router.replace("/sign-in");
@@ -53,12 +55,14 @@ const Profile = () => {
         keyExtractor={(item) => item._id}
         renderItem={({ item }) => (
           console.log("item", item),
-          <ImageCard
-            title={item?.title || "Untitled"}
-            thumbnail={item?.image || ""}
-            creator={item?.userId?.username || "Unknown"}
-            avatar={item?.userId?.avatar || ""}
-          />
+          (
+            <ImageCard
+              title={item?.title || "Untitled"}
+              thumbnail={item?.image || ""}
+              creator={item?.userId?.username || "Unknown"}
+              avatar={item?.userId?.avatar || ""}
+            />
+          )
         )}
         // if empty data
         ListEmptyComponent={() => (
@@ -105,11 +109,16 @@ const Profile = () => {
                 containerStyles="mr-10"
               />
 
-              <Image
-                source={icons.profile}
-                resizeMode="contain"
-                className="w-6 h-6"
-              />
+              <TouchableOpacity
+                onPress={() => router.push("/changeProfile")}
+                className="flex items-center"
+              >
+                <Image
+                  source={icons.profile}
+                  resizeMode="contain"
+                  className="w-6 h-6"
+                />
+              </TouchableOpacity>
             </View>
           </View>
         )}
