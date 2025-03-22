@@ -37,16 +37,11 @@ const SignUp = () => {
       // Xử lý kết quả đăng nhập thành công
       const userData = response.data.data;
 
-      // Save to AsyncStorage
-      try {
-        await AsyncStorage.setItem("Token", response.data.accessToken);
-        await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
-        await AsyncStorage.setItem("@is_logged", "true");
-      } catch (storageError) {
-        Alert.alert("Error saving to AsyncStorage:");
-        console.error("Error saving to AsyncStorage:", storageError);
-        return;
-      }
+      console.log("userData", userData);
+
+      await AsyncStorage.setItem("Token", userData.accessToken);
+      await AsyncStorage.setItem("@user_data", JSON.stringify(userData));
+      await AsyncStorage.setItem("@is_logged", "true");
 
       // Update context
       setUser(userData);

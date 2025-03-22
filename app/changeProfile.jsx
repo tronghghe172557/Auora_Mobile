@@ -7,6 +7,7 @@ import {
   ScrollView,
   Image,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import { useGlobalContext } from "../context/GlobalProvider";
 import api from "../lib/axios.lib";
@@ -79,11 +80,14 @@ const Profile = () => {
         updateData.newPassword = form.newPassword;
       }
 
-      const response = await api.put(`${API_UPDATE_PROFILE}/${user._id}`, updateData);
+      const response = await api.put(
+        `${API_UPDATE_PROFILE}/${user._id}`,
+        updateData
+      );
 
-      if (response.data.success) {
-        setUser(response.data.data);
-        showToast("Cập nhật thông tin thành công");
+      if (response.data) {
+        setUser(response.data);
+        Alert.alert("Cập nhật thông tin thành công");
       }
     } catch (error) {
       showToast(error?.response?.data?.message || "Có lỗi xảy ra");

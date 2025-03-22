@@ -37,13 +37,14 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, [reloadHomepage, reload]);
+  }, [reloadHomepage, reload, user]);
 
   const logout = async () => {
-    AsyncStorage.removeItem("user");
-    AsyncStorage.removeItem("isLogged");
+    AsyncStorage.removeItem("Token");
+    AsyncStorage.removeItem("@user_data");
+    AsyncStorage.removeItem("@is_logged");
     setUser(null);
-    setIsLogged(false);
+    setIsLogged(false); 
 
     router.replace("/sign-in");
   };
