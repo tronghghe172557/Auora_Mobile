@@ -26,6 +26,9 @@ const Profile = () => {
           const imagesUser = await api.get(
             `${API_IMAGES_USER}/${userAfterParse?._id}`
           );
+
+          const user = await api.get(`/user/${userAfterParse?._id}`);
+          setUser(user.data);
           setPosts(imagesUser.data.data);
         } else {
           router.replace("/sign-in");
@@ -37,7 +40,7 @@ const Profile = () => {
     };
 
     fetchProfile();
-  }, [reloadHomepage, reload, user]);
+  }, [reloadHomepage, reload]);
 
   const logout = async () => {
     AsyncStorage.removeItem("Token");

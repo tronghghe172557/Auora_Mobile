@@ -8,6 +8,8 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { useGlobalContext } from "../context/GlobalProvider";
 import api from "../lib/axios.lib";
@@ -19,7 +21,8 @@ import { CustomButton, FormField } from "../components";
 import { API_UPDATE_PROFILE } from "../constants/api.contants";
 
 const Profile = () => {
-  const { user, setUser } = useGlobalContext();
+  const { user, setUser, reloadHomepage, setReloadHomePage } =
+    useGlobalContext();
   const [isSubmitting, setSubmitting] = useState(false);
   const [toastVisible, setToastVisible] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
@@ -88,6 +91,7 @@ const Profile = () => {
       if (response.data) {
         setUser(response.data);
         Alert.alert("Cập nhật thông tin thành công");
+        setReloadHomePage(!reloadHomepage);
       }
     } catch (error) {
       showToast(error?.response?.data?.message || "Có lỗi xảy ra");
@@ -103,96 +107,100 @@ const Profile = () => {
         message={toastMessage}
         onClose={() => setToastVisible(false)}
       />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        <ScrollView className="px-4 py-6">
+          {/*  */}
+          <View className="flex-row justify-between items-center mb-6">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="w-10 h-10 justify-center"
+            >
+              <Ionicons name="arrow-back" size={24} color="white" />
+            </TouchableOpacity>
 
-      <ScrollView className="px-4 py-6">
-        {/*  */}
-        <View className="flex-row justify-between items-center mb-6">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="w-10 h-10 justify-center"
-          >
-            <Ionicons name="arrow-back" size={24} color="white" />
-          </TouchableOpacity>
+            <Text className="text-2xl font-psemibold text-white flex-1 ml-4">
+              Edit Profile
+            </Text>
+          </View>
+          {/*  */}
 
-          <Text className="text-2xl font-psemibold text-white flex-1 ml-4">
-            Edit Profile
+          {/* Avatar */}
+          <View className="items-center my-6">
+            <TouchableOpacity onPress={pickImage}>
+              <Image
+                source={{ uri: avatarUri || user?.avatar }}
+                className="w-24 h-24 rounded-full"
+              />
+              <View className="absolute bottom-0 right-0 bg-secondary p-2 rounded-full">
+                <Ionicons name="camera" size={20} color="black" />
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* Form Fields */}
+          <FormField
+            title="Username"
+            value={form.username}
+            handleChangeText={(text) => setForm({ ...form, username: text })}
+            otherStyles="mt-4"
+          />
+
+          <FormField
+            title="Email"
+            value={form.email}
+            editable={false}
+            otherStyles="mt-4"
+          />
+
+          <FormField
+            title="Phone"
+            value={form.phone}
+            handleChangeText={(text) => setForm({ ...form, phone: text })}
+            otherStyles="mt-4"
+            keyboardType="phone-pad"
+          />
+
+          <Text className="text-white font-psemibold mt-6 mb-2">
+            Change Password
           </Text>
-        </View>
-        {/*  */}
 
-        {/* Avatar */}
-        <View className="items-center my-6">
-          <TouchableOpacity onPress={pickImage}>
-            <Image
-              source={{ uri: avatarUri || user?.avatar }}
-              className="w-24 h-24 rounded-full"
-            />
-            <View className="absolute bottom-0 right-0 bg-secondary p-2 rounded-full">
-              <Ionicons name="camera" size={20} color="black" />
-            </View>
-          </TouchableOpacity>
-        </View>
+          <FormField
+            title="Current Password"
+            value={form.password}
+            handleChangeText={(text) => setForm({ ...form, password: text })}
+            secureTextEntry
+            otherStyles="mt-4"
+          />
 
-        {/* Form Fields */}
-        <FormField
-          title="Username"
-          value={form.username}
-          handleChangeText={(text) => setForm({ ...form, username: text })}
-          otherStyles="mt-4"
-        />
+          <FormField
+            title="New Password"
+            value={form.newPassword}
+            handleChangeText={(text) => setForm({ ...form, newPassword: text })}
+            secureTextEntry
+            otherStyles="mt-4"
+          />
 
-        <FormField
-          title="Email"
-          value={form.email}
-          editable={false}
-          otherStyles="mt-4"
-        />
+          <FormField
+            title="Confirm New Password"
+            value={form.confirmPassword}
+            handleChangeText={(text) =>
+              setForm({ ...form, confirmPassword: text })
+            }
+            secureTextEntry
+            otherStyles="mt-4"
+          />
 
-        <FormField
-          title="Phone"
-          value={form.phone}
-          handleChangeText={(text) => setForm({ ...form, phone: text })}
-          otherStyles="mt-4"
-          keyboardType="phone-pad"
-        />
-
-        <Text className="text-white font-psemibold mt-6 mb-2">
-          Change Password
-        </Text>
-
-        <FormField
-          title="Current Password"
-          value={form.password}
-          handleChangeText={(text) => setForm({ ...form, password: text })}
-          secureTextEntry
-          otherStyles="mt-4"
-        />
-
-        <FormField
-          title="New Password"
-          value={form.newPassword}
-          handleChangeText={(text) => setForm({ ...form, newPassword: text })}
-          secureTextEntry
-          otherStyles="mt-4"
-        />
-
-        <FormField
-          title="Confirm New Password"
-          value={form.confirmPassword}
-          handleChangeText={(text) =>
-            setForm({ ...form, confirmPassword: text })
-          }
-          secureTextEntry
-          otherStyles="mt-4"
-        />
-
-        <CustomButton
-          title="Save Changes"
-          handlePress={submit}
-          containerStyles="mt-6"
-          isLoading={isSubmitting}
-        />
-      </ScrollView>
+          <CustomButton
+            title="Save Changes"
+            handlePress={submit}
+            containerStyles="mt-6"
+            isLoading={isSubmitting}
+          />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };

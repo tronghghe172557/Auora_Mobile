@@ -8,6 +8,8 @@ import {
   Image,
   TouchableOpacity,
   ScrollView,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import { icons } from "../../constants";
@@ -105,63 +107,72 @@ const Create = () => {
 
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView className="px-4 my-6">
-        <Text className="text-2xl text-white font-psemibold">Upload Image</Text>
-
-        {/* TITLE  */}
-        <FormField
-          title="Image Title"
-          value={form.title}
-          placeholder="Give your video a catchy title..."
-          handleChangeText={(e) => setForm({ ...form, title: e })}
-          otherStyles="mt-10"
-        />
-
-        <View className="mt-7 space-y-2">
-          <Text className="text-base text-gray-100 font-pmedium">
-            Thumbnail Image
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+      >
+        {/*  */}
+        <ScrollView className="px-4 my-6">
+          <Text className="text-2xl text-white font-psemibold">
+            Upload Image
           </Text>
 
-          {/* IMAGE  */}
-          <TouchableOpacity onPress={pickImageAsync}>
-            {imageUri ? (
-              <Image
-                source={imageUri ? { uri: imageUri } : icons.upload}
-                resizeMode="cover"
-                className="w-full h-64 rounded-2xl"
-              />
-            ) : (
-              <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 flex justify-center items-center flex-row space-x-2">
+          {/* TITLE  */}
+          <FormField
+            title="Image Title"
+            value={form.title}
+            placeholder="Give your video a catchy title..."
+            handleChangeText={(e) => setForm({ ...form, title: e })}
+            otherStyles="mt-10"
+          />
+
+          <View className="mt-7 space-y-2">
+            <Text className="text-base text-gray-100 font-pmedium">
+              Thumbnail Image
+            </Text>
+
+            {/* IMAGE  */}
+            <TouchableOpacity onPress={pickImageAsync}>
+              {imageUri ? (
                 <Image
                   source={imageUri ? { uri: imageUri } : icons.upload}
-                  resizeMode="contain"
-                  alt="upload"
-                  className="w-5 h-5"
+                  resizeMode="cover"
+                  className="w-full h-64 rounded-2xl"
                 />
-                <Text className="text-sm text-gray-100 font-pmedium">
-                  Choose a file
-                </Text>
-              </View>
-            )}
-          </TouchableOpacity>
-        </View>
+              ) : (
+                <View className="w-full h-16 px-4 bg-black-100 rounded-2xl border-2 border-black-200 flex justify-center items-center flex-row space-x-2">
+                  <Image
+                    source={imageUri ? { uri: imageUri } : icons.upload}
+                    resizeMode="contain"
+                    alt="upload"
+                    className="w-5 h-5"
+                  />
+                  <Text className="text-sm text-gray-100 font-pmedium">
+                    Choose a file
+                  </Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
 
-        {/* PROMPT */}
-        <FormField
-          title="Prompt"
-          value={form.prompt}
-          placeholder="The prompt of your video...."
-          handleChangeText={(e) => setForm({ ...form, prompt: e })}
-          otherStyles="mt-7"
-        />
+          {/* PROMPT */}
+          <FormField
+            title="Prompt"
+            value={form.prompt}
+            placeholder="The prompt of your video...."
+            handleChangeText={(e) => setForm({ ...form, prompt: e })}
+            otherStyles="mt-7"
+          />
 
-        <CustomButton
-          title="Submit & Publish"
-          handlePress={submit}
-          containerStyles="mt-7"
-          isLoading={uploading}
-        />
-      </ScrollView>
+          <CustomButton
+            title="Submit & Publish"
+            handlePress={submit}
+            containerStyles="mt-7"
+            isLoading={uploading}
+          />
+        </ScrollView>
+        {/*  */}
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
