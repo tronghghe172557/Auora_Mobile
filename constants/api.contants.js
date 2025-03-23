@@ -14,6 +14,7 @@ export const API_UPLOAD_IMAGE = `/image/upload`;
 
 // USER
 export const API_UPDATE_PROFILE = `/user`;
+export const API_USER = `/user`;
 
 // ipconfig getifaddr en0
 

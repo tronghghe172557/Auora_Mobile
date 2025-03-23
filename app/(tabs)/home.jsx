@@ -1,76 +1,66 @@
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, Image, ScrollView, Text, View } from "react-native";
-
+import {
+  FlatList,
+  View,
+  StatusBar,
+  Dimensions,
+} from "react-native";
 import { EmptyState } from "../../components";
-import { API_IMAGE } from "../../constants/api.contants";
-import ImageCard from "../../components/Image";
+import { API_IMAGE, API_USER } from "../../constants/api.contants";
 import api from "../../lib/axios.lib";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import PostItem from "../../components/PostItem";
+
+const { height } = Dimensions.get("window");
 
 const Home = () => {
   const { user, setReloadHomepage, reloadHomepage } = useGlobalContext();
   const [posts, setPosts] = useState([]);
+  const [message, setMessage] = useState("");
+  const [users, setUsers] = useState([]);
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        // GET posts => images from user
-        const imagesUser = await api.get(`${API_IMAGE}`);
-        setPosts(imagesUser?.data?.data || []);
-      } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu người dùng từ AsyncStorage:", error);
-        Alert.alert("Lỗi", "Không thể lấy dữ liệu người dùng từ bộ nhớ");
-      }
-    };
-
-    fetchProfile();
+    fetchPosts();
   }, [reloadHomepage]);
 
-  return (
-    <SafeAreaView className="bg-primary h-full">
-      <FlatList
-        data={posts}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <ImageCard
-            title={item?.title || "Untitled"}
-            thumbnail={item?.image || ""}
-            creator={item?.userId?.username || "Unknown"}
-            avatar={item?.userId?.avatar || ""}
-          />
-        )}
-        // HEADER
-        ListHeaderComponent={() => (
-          <View className="flex my-6 px-4 space-y-6">
-            <View className="flex justify-between items-start flex-row mb-6">
-              <View>
-                <Text className="font-pmedium text-sm text-gray-100">
-                  Welcome Back
-                </Text>
-                <Text className="text-2xl font-psemibold text-white">
-                  LOCKET OF<Text className="text-secondary"> HGT</Text>
-                </Text>
-              </View>
+  const fetchPosts = async () => {
+    try {
+      const response = await api.get(`${API_IMAGE}`);
+      const users = await api.get(`${API_USER}`);
+      setPosts(response?.data?.data || []);
+      setUsers(users?.data || []);
+    } catch (error) {
+      console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+  };
 
-              <View className="mt-1.5">
-                <Image
-                  source={user?.avatar}
-                  className="w-9 h-10"
-                  resizeMode="contain"
-                />
-              </View>
-            </View>
-          </View>
-        )}
-        // if empty data
-        ListEmptyComponent={() => (
-          <EmptyState
-            title="No Videos Found"
-            subtitle="No videos found for this profile"
-          />
-        )}
-      />
+  const renderItem = ({ item }) => <PostItem item={item} user={user} users={users} />;
+
+  return (
+    <SafeAreaView
+      className="flex-1 bg-black"
+      edges={["right", "left", "top"]}
+    >
+      <View className="flex-1 bg-black">
+        <StatusBar barStyle="light-content" />
+
+        <FlatList
+          data={posts}
+          keyExtractor={(item) => item._id}
+          renderItem={renderItem}
+          snapToInterval={height}
+          snapToAlignment="start"
+          decelerationRate="fast"
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={() => (
+            <EmptyState
+              title="No Images Found"
+              subtitle="No images found for this profile"
+            />
+          )}
+        />
+      </View>
     </SafeAreaView>
   );
 };
