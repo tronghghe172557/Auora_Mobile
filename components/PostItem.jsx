@@ -5,8 +5,9 @@ import { router } from "expo-router";
 
 const { height, width } = Dimensions.get("window");
 
-const PostItem = ({ item, user, users }) => {
+const PostItem = ({ item, user, users, setFilter }) => {
   const [showDropdown, setShowDropdown] = useState(false);
+  const [name, setName] = useState("Mọi người");
 
   const toggleDropdown = () => {
     setShowDropdown(!showDropdown);
@@ -26,23 +27,39 @@ const PostItem = ({ item, user, users }) => {
             className="bg-zinc-700/50 rounded-full px-4 py-1.5 flex-row items-center"
             onPress={toggleDropdown}
           >
-            <Text className="text-white text-base">Mọi người</Text>
+            <Text className="text-white text-base">{name}</Text>
             <Text className="text-white ml-2">{showDropdown ? "▲" : "▼"}</Text>
           </TouchableOpacity>
 
           {showDropdown && (
             <View className="absolute top-10 left-0 bg-zinc-800 rounded-xl p-2 w-40 z-10">
+              <TouchableOpacity
+                className="flex-row items-center space-x-2 m-3 font-semibold"
+                key={"all"}
+                onPress={() => {
+                  setName("Mọi người")
+                  setShowDropdown(false)
+                  setFilter("")
+                }}
+              >
+                <Text className="text-white">{"All"}</Text>
+              </TouchableOpacity>
               {users.map((user) => (
-                <View
+                <TouchableOpacity
                   className="flex-row items-center space-x-2 m-3 font-semibold"
                   key={user._id}
+                  onPress={() => {
+                    setName(user?.username)
+                    setShowDropdown(false)
+                    setFilter(user._id)
+                  }}
                 >
                   <Image
                     source={{ uri: user.avatar }}
                     className="w-6 h-6 rounded-full"
                   />
                   <Text className="text-white">{user.username}</Text>
-                </View>
+                </TouchableOpacity>
               ))}
             </View>
           )}

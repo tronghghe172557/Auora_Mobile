@@ -73,7 +73,7 @@ const Profile = () => {
       await AsyncStorage.removeItem("@is_logged");
       setUser(null);
       setIsLogged(false);
-      router.replace("/login");
+      // router.replace("/login");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);
     }

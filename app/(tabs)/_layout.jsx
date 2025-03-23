@@ -63,7 +63,7 @@ const TabLayout = () => {
             title: "Camera",
             headerShown: false,
             tabBarIcon: ({ color, focused }) => (
-              <TabIcon icon={icons.search} color={color} focused={focused} />
+              <TabIcon icon={icons.camera} color={color} focused={focused} />
             ),
           }}
         />
