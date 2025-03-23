@@ -1,15 +1,23 @@
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, Dimensions, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as MediaLibrary from "expo-media-library";
 import { TopBar, CameraFrame, BottomControls } from "../../components/camera";
-import { uploadImageToCloudinary } from "../../lib/cloudinary.lib";
 import { API_IMAGE } from "../../constants/api.contants";
 import api from "../../lib/axios.lib";
 import { router } from "expo-router";
 import { useGlobalContext } from "../../context/GlobalProvider";
 import Loader from "../../components/Loader";
+import uploadImageInBE from "../../lib/uploadImage";
 
 export default function CameraScreen() {
   const { setReloadHomePage, reloadHomepage } = useGlobalContext();
@@ -113,7 +121,7 @@ export default function CameraScreen() {
     setIsUploading(true);
     try {
       // Upload ảnh lên Cloudinary
-      const imageUrl = await uploadImageToCloudinary(previewImage);
+      const imageUrl = await uploadImageInBE(previewImage);
 
       if (!imageUrl) {
         Alert.alert("Error", "Failed to upload image");
@@ -124,7 +132,7 @@ export default function CameraScreen() {
       const response = await api.post(API_IMAGE, {
         title: message,
         description: message,
-        image: imageUrl,
+        image: imageUrl?.imageUrl,
       });
 
       if (response.data.data) {
@@ -148,19 +156,25 @@ export default function CameraScreen() {
         <TopBar onSave={savePhoto} isPreviewMode={!!previewImage} />
 
         {/* camera */}
-        <CameraFrame
-          frameSize={frameSize}
-          previewImage={previewImage}
-          cameraRef={cameraRef}
-          facing={facing}
-          flash={flash}
-          isCameraReady={isCameraReady}
-          onCameraReady={() => setCameraReady(true)}
-          onToggleFlash={toggleFlash}
-          message={message}
-          setMessage={setMessage}
-          isUploading={isUploading}
-        />
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          className="flex-1"
+          keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
+        >
+          <CameraFrame
+            frameSize={frameSize}
+            previewImage={previewImage}
+            cameraRef={cameraRef}
+            facing={facing}
+            flash={flash}
+            isCameraReady={isCameraReady}
+            onCameraReady={() => setCameraReady(true)}
+            onToggleFlash={toggleFlash}
+            message={message}
+            setMessage={setMessage}
+            isUploading={isUploading}
+          />
+        </KeyboardAvoidingView>
 
         {/* loading */}
         {isUploading && <Loader isLoading={isUploading} />}

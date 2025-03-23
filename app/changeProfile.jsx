@@ -19,6 +19,7 @@ import { uploadImageToCloudinary } from "../lib/cloudinary.lib";
 import { Ionicons } from "@expo/vector-icons";
 import { CustomButton, FormField } from "../components";
 import { API_UPDATE_PROFILE } from "../constants/api.contants";
+import uploadImageInBE from "../lib/uploadImage";
 
 const Profile = () => {
   const { user, setUser, reloadHomepage, setReloadHomePage } =
@@ -67,9 +68,9 @@ const Profile = () => {
 
       // Nếu có thay đổi avatar
       if (avatarUri && avatarUri !== user?.avatar) {
-        const avatarUrl = await uploadImageToCloudinary(avatarUri);
+        const avatarUrl = await uploadImageInBE(avatarUri);
         if (avatarUrl) {
-          updateData.avatar = avatarUrl;
+          updateData.avatar = avatarUrl?.imageUrl;
         }
       }
 

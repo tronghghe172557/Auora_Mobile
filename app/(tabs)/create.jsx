@@ -20,6 +20,7 @@ import * as ImagePicker from "expo-image-picker";
 import { uploadImageToCloudinary } from "../../lib/cloudinary.lib";
 import api from "../../lib/axios.lib";
 import { API_IMAGE } from "../../constants/api.contants";
+import uploadImageInBE from "../../lib/uploadImage";
 
 const Create = () => {
   const { user, setReloadHomePage, reloadHomepage } = useGlobalContext();
@@ -54,7 +55,8 @@ const Create = () => {
     setUploading(true);
     try {
       // upload image to cloudinary
-      const image = await uploadImageToCloudinary(imageUri);
+      const image = await uploadImageInBE(imageUri);
+      console.log("image: ", image)
 
       if (!image) {
         Alert.alert("Error", "Failed to upload image");
@@ -64,7 +66,7 @@ const Create = () => {
       const data = {
         title: form.title,
         description: form.prompt,
-        image: image,
+        image: image?.imageUrl,
       };
       /// save to database
       const response = await api.post(API_IMAGE, data);
