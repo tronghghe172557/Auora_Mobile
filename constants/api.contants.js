@@ -10,6 +10,7 @@ export const API_REGISTER = `/auth/register`;
 // IMAGE
 export const API_IMAGE = `/image`;
 export const API_IMAGES_USER = `/image/users`;
+export const API_UPLOAD_IMAGE = `/image/upload`;
 
 // USER
 export const API_UPDATE_PROFILE = `/user`;
