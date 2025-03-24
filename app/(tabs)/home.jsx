@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlatList, View, StatusBar, Dimensions } from "react-native";
+import { FlatList, View, StatusBar, Dimensions, TouchableOpacity } from "react-native";
 import { CustomButton, EmptyState } from "../../components";
 import { API_IMAGE, API_USER } from "../../constants/api.contants";
 import api from "../../lib/axios.lib";
@@ -9,6 +9,7 @@ import PostItem from "../../components/PostItem";
 import { images } from "../../constants";
 import { Image } from "react-native";
 import { Text } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 const { height } = Dimensions.get("window");
 
@@ -35,7 +36,7 @@ const Home = () => {
   };
 
   const renderItem = ({ item }) => (
-    <PostItem item={item} user={user} users={users} setFilter={setFilter}  />
+    <PostItem item={item} user={user} users={users} setFilter={setFilter} />
   );
 
   return (
@@ -75,7 +76,7 @@ const Home = () => {
               <CustomButton
                 title="Reload | Create new post"
                 handlePress={() => {
-                  setFilter("")
+                  setFilter("");
                 }}
                 containerStyles="w-full my-5"
               />

@@ -64,6 +64,13 @@ const PostItem = ({ item, user, users, setFilter }) => {
             </View>
           )}
         </View>
+
+        <TouchableOpacity
+            onPress={() => router.push("/message")}
+            className="w-10 h-10 bg-zinc-800/50 rounded-full items-center justify-center"
+          >
+            <Ionicons name="chatbubble-outline" size={22} color="white" />
+          </TouchableOpacity>
       </View>
 
       {/* Main Content - Locket Style */}
@@ -106,7 +113,7 @@ const PostItem = ({ item, user, users, setFilter }) => {
         </View>
 
         {/* Reaction Input - Locket Style */}
-        <View className="bg-zinc-800/50 rounded-full py-2.5 px-4 flex-row items-center">
+        {/*<View className="bg-zinc-800/50 rounded-full py-2.5 px-4 flex-row items-center">
           <Text className="text-gray-400 text-base">Gửi tin...</Text>
           <View className="flex-row ml-auto space-x-5">
             <Text className="text-2xl">❤️</Text>
@@ -115,6 +122,7 @@ const PostItem = ({ item, user, users, setFilter }) => {
             <Text className="text-2xl">😊</Text>
           </View>
         </View>
+        */}
 
         {/* Bottom Navigation */}
         <View className="flex-row justify-between items-center mt-6">
